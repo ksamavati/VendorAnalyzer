@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>OpenAI API Demo</title>
+		<link rel="stylesheet" href="style.css" />
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet" />
+		<script src="script.js" type="text/javascript"></script>
+	</head>
+	<body>
+		<form>
+			<label for="prompt">Prompt:</label>
+			<textarea style="width: 500px; height: 100px" type="textarea" id="prompt" name="prompt">This is a list of vendor accounts from a nonprofit business's accounting database with inconsistent formatting and elements missing. Identify whether each element is present, and respond with a |-delimited table representing this data with the following columns: Business Name, Contact Name, Address, City, State, Zip. If the state or zip code are missing, populate them for known US locales. If the company, client, or address is missing, leave those fields blank. Each line contains a different vendor, so you should return one line for each input line.</textarea><br /><br />
+			<label for="dataset">Dataset:</label>
+			<textarea style="width: 500px; height: 100px" id="dataset" name="dataset">
+3D's Plumbing Heating & Cooling LLC P.O. Box 2902 Las Vegas
+505 Kustomz Auto Body Shop 403 New Mexico Ave Las Vegas
+A-1 Fire Inspection 1550 Stephanie Rd SE Ste. 107 Rio Rancho
+A #1 Air Santa Fe Inc 369 Montezuma Avenue #552 Santa Fe</textarea
+			><br /><br />
+			<input type="button" id="generate-button" value="Generate" onclick="modifyAndDisplayDataset()" /><br /><br />
+		</form>
+		<div id="loading-spinner">
+			<div id="spinner"></div>
+		</div>
+		<div id="loading-progress"></div>
+		<div id="output-table">
+			<table>
+				<tr>
+					<th>Vendor Name</th>
+					<th>Contact Name</th>
+					<th>Address</th>
+					<th>City</th>
+					<th>State</th>
+					<th>Zip Code</th>
+				</tr>
+				<tr>
+					<td>3D's Plumbing Heating &amp; Cooling LLC</td>
+					<td></td>
+					<td>P.O. Box 2902</td>
+					<td>Las Vegas</td>
+					<td>NV</td>
+					<td>89101</td>
+				</tr>
+				<tr>
+					<td>505 Kustomz Auto Body Shop</td>
+					<td></td>
+					<td>403 New Mexico Ave</td>
+					<td>Las Vegas</td>
+					<td>NV</td>
+					<td>89101</td>
+				</tr>
+				<tr>
+					<td>A-1 Fire Inspection</td>
+					<td></td>
+					<td>1550 Stephanie Rd SE Ste. 107</td>
+					<td>Rio Rancho</td>
+					<td>NM</td>
+					<td>87124</td>
+				</tr>
+				<tr>
+					<td>A #1 Air Santa Fe Inc</td>
+					<td></td>
+					<td>369 Montezuma Avenue #552</td>
+					<td>Santa Fe</td>
+					<td>NM</td>
+					<td>87501</td>
+				</tr>
+			</table>
+		</div>
+	</body>
+</html>
