@@ -136,3 +136,11 @@ input[type="text"] {
 		transform: rotate(360deg);
 	}
 }
+
+#prompt-label {
+	display: none;
+}
+
+#prompt {
+	display: none;
+}
