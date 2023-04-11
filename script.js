@@ -1,4 +1,4 @@
-const API_KEY = "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";
+const API_KEY = "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";
 const MAX_TOKENS = 2048;
 
 async function modifyDataset(prompt, dataset) {
