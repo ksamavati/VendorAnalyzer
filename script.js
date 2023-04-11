@@ -11,7 +11,7 @@ async function modifyDataset(prompt, dataset) {
 		n: 1,
 	};
 	const headers = {
-		"Content-Type": "application/json",gh
+		"Content-Type": "application/json",
 		Authorization: `Bearer ${API_KEY}`,
 	};
 	const response = await fetch(apiUrl, {
