@@ -31,8 +31,6 @@ const EXAMPLE_RESPONSE =
 	" | |1905 Wyoming Blvd| |Albuquerque|NM|87112| \n";
 const DATALESS_PROMPT_LENGTH = (FIXED_PROMPT + EXAMPLE_DATA + EXAMPLE_RESPONSE).length;
 
-const apiUrl = "https://api.openai.com/v1/engines/text-davinci-003/completions";
-
 let dataset = `Al's Plumbing Heating & Cooling LLC P.O. Box 2106 Los Angeles
 303 Fire Auto Body Shop 403 North Carolina Ave San Francisco
 B-6 Fire House 1420 Steph Rd SE Ste. 107 Rio Rancho
