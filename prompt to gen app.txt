@@ -1,0 +1,10 @@
+Write a python script that performs the following tasks. When I say to "find and click" a string, I want you to:
+Input ctrl+f
+Input the string
+Imput ctrl+enter
+
+Here is what the script should do:
+Input ctrl+f
+Input "monday"
+If there is not an orange pixel on screen, end the script, otherwise continue.
+

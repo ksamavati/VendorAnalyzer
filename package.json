@@ -1,5 +1,15 @@
 {
+  "name": "vendor-analyzer",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
   "devDependencies": {
     "dotenv-webpack": "^8.0.1"
+  },
+  "dependencies": {
+    "dotenv": "^17.3.1",
+    "openai": "^6.27.0"
   }
 }

@@ -1,74 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>OpenAI API Demo</title>
-		<link rel="stylesheet" href="style.css" />
-		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet" />
-		<script src="script.js" type="text/javascript"></script>
-	</head>
-	<body>
-		<form>
-			<label for="prompt" id="prompt-label">Prompt:</label>
-			<textarea style="width: 500px; height: 100px" type="textarea" id="prompt" name="prompt">This is a list of vendor accounts from a nonprofit business's accounting database with inconsistent formatting and elements missing. Identify whether each element is present, and respond with a |-delimited table representing this data with the following columns: Business Name, Contact Name, Address, City, State, Zip. If the state or zip code are missing, populate them for known US locales. If the company, client, or address is missing, leave those fields blank. Each line contains a different vendor's info, so you should return one line for each input line.</textarea><br /><br />
-			<label for="dataset">Dataset:</label>
-			<textarea style="width: 500px; height: 100px" id="dataset" name="dataset">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Unstructured Vendor Data Parser</title>
+	<link rel="stylesheet" href="style.css" />
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet" />
+	<script src="script.js" type="text/javascript"></script>
+</head>
+
+<body>
+	<form>
+		<label for="prompt" id="prompt-label">Prompt:</label>
+		<h2>Unstructured Vendor Data Parser</h2>
+		<p>
+		<ul>
+			<li>Goes through each line and categorizes the data into columns, using OpenAI's DaVinci natural language model to
+				identify which data belongs in which field.</li>
+			<!-- <li><s>Fills in the State for known locales if city is present and State is missing.</s> (Functionality removed to ensure we don't make erroneous modifications)</li> -->
+			<li>Duplicates the Vendor Name to the Contact Name field if the vendor is a person.</li>
+		</ul>
+		</p>
+		<!-- <p class="small-text">
+			Disclaimer: This app sends input data to OpenAI's servers for processing, consider data security when processing
+			highly sensitive data.
+		</p> -->
+		<!-- <p>This app uses the OpenAI DaVinci model via the OpenAI API to attempt to categorize unstructured vendor
+			data.<br><br><span class="small-text">Works around the AI's 2000-token limit by breaking the prompt into
+				2000-token chunks and runs multiple concurrent calls asynchronously, which provides 2 critical advantages over
+				prompting ChatGPT:<br>
+				There is no limit to the dataset size you can use.<br>
+				It will execute far more quickly than ChatGPT, which would take a very long time to process very large datasets.
+		</p></span> -->
+		<textarea style="width: 500px; height: 100px" type="textarea" id="prompt" name="prompt">Structure this data into columns:
+If a field is blank, leave it blank. If the vendor name is a person, copy their first and last name into the Contact Name field.
+If an address ends with a unit number, put it on Address Line 2.
+Anything enclosed in () should be included in the Vendor name.</textarea><br /><br />
+		<label for="dataset">Paste unstructured dataset here:</label>
+		<textarea style="width: 500px; height: 100px" id="dataset" name="dataset">
 Al's Plumbing Heating & Cooling LLC P.O. Box 2106 Los Angeles
 303 Fire Auto Body Shop 403 North Carolina Ave San Francisco
 B-6 Fire House 1420 Steph Rd SE Ste. 107 Rio Rancho
-A #1 Air Fakeairline Inc 773 Carlos Avenue #416 Santa Fe</textarea
-			><br /><br />
-			<input type="button" id="generate-button" value="Generate" onclick="modifyAndDisplayDataset()" /><br /><br />
-		</form>
-		<div id="loading-spinner">
-			<div id="spinner"></div>
-		</div>
-		<div id="loading-progress"></div>
-		<div id="output-table">
-			<table>
-				<tr>
-					<th>Vendor Name</th>
-					<th>Contact Name</th>
-					<th>Address</th>
-					<th>City</th>
-					<th>State</th>
-					<th>Zip Code</th>
-				</tr>
-				<tr>
-					<td>3D's Plumbing Heating &amp; Cooling LLC</td>
-					<td></td>
-					<td>P.O. Box 2902</td>
-					<td>Las Vegas</td>
-					<td>NV</td>
-					<td>89101</td>
-				</tr>
-				<tr>
-					<td>505 Kustomz Auto Body Shop</td>
-					<td></td>
-					<td>403 New Mexico Ave</td>
-					<td>Las Vegas</td>
-					<td>NV</td>
-					<td>89101</td>
-				</tr>
-				<tr>
-					<td>A-1 Fire Inspection</td>
-					<td></td>
-					<td>1550 Stephanie Rd SE Ste. 107</td>
-					<td>Rio Rancho</td>
-					<td>NM</td>
-					<td>87124</td>
-				</tr>
-				<tr>
-					<td>A #1 Air Santa Fe Inc</td>
-					<td></td>
-					<td>369 Montezuma Avenue #552</td>
-					<td>Santa Fe</td>
-					<td>NM</td>
-					<td>87501</td>
-				</tr>
-			</table>
-		</div>
-	</body>
+A #1 Air Fakeairline Inc 773 Carlos Avenue #416 Santa Fe
+Harriett Goodman (EMP) 123 Crockett Ct Cincinnati</textarea><br /><br />
+		<input type="button" id="generate-button" value="Generate" onclick="generateClicked()" /><br />
+	</form>
+	<button class="copy-btn" onclick="copyClicked()">Copy <i class="fa fa-copy"></i></button>
+	<div id="loading-spinner">
+		<div id="spinner"></div>
+	</div>
+	<div id="loading-progress"></div>
+	<div id="output-table">
+		<table>
+			<tr>
+				<th>Vendor Name</th>
+				<th>Contact Name</th>
+				<th>Address Line 1</th>
+				<th>Address Line 2</th>
+				<th>City</th>
+				<th>State</th>
+				<th>Zip</th>
+			</tr>
+			<tr>
+				<td>Al's Plumbing Heating &amp; Cooling LLC</td>
+				<td></td>
+				<td>P.O. Box 2106</td>
+				<td></td>
+				<td>Los Angeles</td>
+				<td>CA</td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>303 Fire Auto Body Shop</td>
+				<td></td>
+				<td>403 North Carolina Ave</td>
+				<td></td>
+				<td>San Francisco</td>
+				<td>CA</td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>A-1 Fire Inspection</td>
+				<td></td>
+				<td>1550 Stephanie Rd SE</td>
+				<td> Ste. 107</td>
+				<td>Rio Rancho</td>
+				<td>NM</td>
+				<td>87124</td>
+			</tr>
+			<tr>
+				<td>A #1 Air Santa Fe Inc</td>
+				<td></td>
+				<td>369 Montezuma Avenue</td>
+				<td>#552</td>
+				<td>Santa Fe</td>
+				<td>NM</td>
+				<td>87501</td>
+			</tr>
+			<tr>
+				<td>Harriett Goodman (EMP)</td>
+				<td>Harriett Goodman</td>
+				<td>123 Crockett Ct</td>
+				<td></td>
+				<td>Cincinnati</td>
+				<td>OH</td>
+				<td>45219</td>
+			</tr>
+		</table>
+	</div>
+</body>
+
 </html>
